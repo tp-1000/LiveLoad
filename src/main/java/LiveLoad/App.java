@@ -11,8 +11,8 @@ public class App {
     }
 
     public static void main(String[] args) throws IOException {
-        DirWatch dirWatch = new DirWatch("/Users/thomaspetty/.liveload/");
-        dirWatch.run(); //start() makes now thread
+        DirWatch dirWatch = new DirWatch("/Users/thomaspetty/Desktop");
+        dirWatch.start(); //start() makes now thread
         System.out.println(new App().getGreeting());
     }
 }

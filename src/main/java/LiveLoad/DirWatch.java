@@ -1,8 +1,12 @@
 package LiveLoad;
 
+import com.sun.nio.file.SensitivityWatchEventModifier;
+
 import java.io.IOException;
 import java.nio.file.*;
 
+
+//Ugly implementation on mac - falls back to polling :(
 public class DirWatch extends Thread{
     private Path dir;
     private WatchService watchService;
@@ -13,9 +17,11 @@ public class DirWatch extends Thread{
 
         watchService = FileSystems.getDefault().newWatchService();
         watchKey = this.dir.register(watchService,
-                StandardWatchEventKinds.ENTRY_MODIFY,
-                StandardWatchEventKinds.ENTRY_CREATE,
-                StandardWatchEventKinds.ENTRY_DELETE);
+                new WatchEvent.Kind[]{
+                        StandardWatchEventKinds.ENTRY_CREATE,
+                        StandardWatchEventKinds.ENTRY_DELETE,
+                        StandardWatchEventKinds.ENTRY_MODIFY},
+                SensitivityWatchEventModifier.HIGH);
     }
 
     @Override
