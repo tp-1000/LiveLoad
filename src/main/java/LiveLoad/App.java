@@ -13,6 +13,10 @@ public class App {
     public static void main(String[] args) throws IOException {
         DirWatch dirWatch = new DirWatch("/Users/thomaspetty/Desktop");
         dirWatch.start(); //start() makes now thread
+
+        WebSocketServer webSocketServer = new WebSocketServer(8080);
+        webSocketServer.start();
+
         System.out.println(new App().getGreeting());
     }
 }
