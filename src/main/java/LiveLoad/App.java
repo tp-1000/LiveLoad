@@ -15,7 +15,7 @@ public class App {
         dirWatch.start(); //start() makes now thread
 
         WebSocketServer webSocketServer = new WebSocketServer(8080);
-        webSocketServer.start();
+        webSocketServer.startServer();
 
         System.out.println(new App().getGreeting());
     }
