@@ -58,6 +58,10 @@ public class WebSocketHandler extends Thread {
                         //       Host: www.w3.org
 //                        Matcher requestedPage = Pattern.compile("GET /([^.]*([^\\s]*))").matcher(data);
                         Matcher requestedPage = Pattern.compile("GET /([^.]*\\.([^\\s]*))").matcher(data);
+//                        needs to handle requests with and add back on the ? mine type to the text/css
+//                        href="../out.css?v=1.0"
+
+
 //                        System.out.println(data);
                         if(requestedPage.find()) {
 
