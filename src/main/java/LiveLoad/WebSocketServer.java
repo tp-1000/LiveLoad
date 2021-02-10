@@ -32,11 +32,14 @@ public class WebSocketServer extends Thread {
         running = true;
         while(running) {
             System.out.println("listening for a connection");
-
+            System.out.println("a loop");
             //accept a connection and pass to hand off
             try {
                 Socket socket = serverSocket.accept();
 
+                WebSocketHandler webSocketHandler = new WebSocketHandler(socket);
+                webSocketHandler.start();
+                System.out.println(WebSocketServer.activeCount());
             } catch (IOException e) {
                 e.printStackTrace();
             }

@@ -3,6 +3,7 @@ package LiveLoad;
 import com.sun.nio.file.SensitivityWatchEventModifier;
 
 import java.io.IOException;
+import java.net.Socket;
 import java.nio.file.*;
 
 
@@ -11,9 +12,12 @@ public class DirWatch extends Thread{
     private Path dir;
     private WatchService watchService;
     private WatchKey watchKey;
+    private Socket socket;
+    private Boolean isRunning = false;
 
-    public DirWatch(String dir) throws IOException {
+    public DirWatch(String dir, Socket socket) throws IOException {
         this.dir = Paths.get(dir);
+        this.socket = socket;
 
         watchService = FileSystems.getDefault().newWatchService();
         watchKey = this.dir.register(watchService,
@@ -26,9 +30,18 @@ public class DirWatch extends Thread{
 
     @Override
     public void run() {
-        while(true){
+        isRunning = true;
+        while(isRunning){
+            //may want to terminate if client disappears
             for (WatchEvent<?> event : watchKey.pollEvents()){
-                System.out.println(event.kind());
+                try {
+                    isRunning = false;
+                    watchService.close();
+                    watchKey.cancel();
+                    socket.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
