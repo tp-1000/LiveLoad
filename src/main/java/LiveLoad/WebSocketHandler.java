@@ -40,7 +40,7 @@ public class WebSocketHandler extends Thread {
                                 + Base64.getEncoder().encodeToString(MessageDigest.getInstance("SHA-1").digest((match.group(1) + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11").getBytes("UTF-8")))
                                 + "\r\n\r\n").getBytes("UTF-8");
                         out.write(response, 0, response.length);
-                            DirWatch dirWatch = new DirWatch("/Users/thomaspetty/Desktop", socket);
+                            DirWatch dirWatch = new DirWatch(socket);
                             dirWatch.start(); //start() makes now thread.out.println("blocking");
                             while(socket.isConnected()){
                             }
@@ -101,7 +101,7 @@ public class WebSocketHandler extends Thread {
         if (path.contains("liveWrapper")) {
             body = fileToBody("/Users/thomaspetty/.liveload/livewrapper.js");
         } else {
-            body = fileToBody("/Users/thomaspetty/Desktop/" + path);
+            body = fileToBody(App.getDirectory() + path);
         }
 
         String response = "HTTP/1.1 200 Success!\n" +

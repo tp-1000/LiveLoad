@@ -31,8 +31,7 @@ public class WebSocketServer extends Thread {
         System.out.println(". . .running. . .");
         running = true;
         while(running) {
-            System.out.println("listening for a connection");
-            System.out.println("a loop");
+            System.out.println("listening for a connection on 8080");
             //accept a connection and pass to hand off
             try {
                 Socket socket = serverSocket.accept();

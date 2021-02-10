@@ -15,8 +15,8 @@ public class DirWatch extends Thread{
     private Socket socket;
     private Boolean isRunning = false;
 
-    public DirWatch(String dir, Socket socket) throws IOException {
-        this.dir = Paths.get(dir);
+    public DirWatch(Socket socket) throws IOException {
+        this.dir = Paths.get(App.getDirectory());
         this.socket = socket;
 
         watchService = FileSystems.getDefault().newWatchService();

@@ -28,3 +28,11 @@ application {
     // Define the main class for the application.
     mainClassName = 'LiveLoad.App'
 }
+
+version = '1.0.0'
+
+jar {
+    manifest {
+        attributes 'Main-Class': "${mainClassName}"
+    }
+}
