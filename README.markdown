@@ -1,9 +1,8 @@
-## ! Under Development !
-operational as of 2-10-21
+#### A simple server that provides basic live-loading 
+ 
+    1) From commandline run with direcotry to watch parameter 
+    2) Request file from localhost:8080/<file.html>
+    3) Modify file in direcotry
+    4) Browser forces reload
 
-simple scenarios only -- no images 
-
-    - accepts CLI arg of directory path
-    - live-loading of html and other text based requests
-    - watches a direcotry
-    
+    Note - will not move up a directory for requests - no requests to outside project
