@@ -28,11 +28,13 @@ public class DirWatch extends Thread{
                 SensitivityWatchEventModifier.HIGH);
     }
 
+
     @Override
     public void run() {
         isRunning = true;
         while(isRunning){
             //may want to terminate if client disappears
+
             for (WatchEvent<?> event : watchKey.pollEvents()){
                 try {
                     isRunning = false;
@@ -44,5 +46,21 @@ public class DirWatch extends Thread{
                 }
             }
         }
+        try {
+            watchService.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        watchKey.cancel();
+        try {
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void setRunning(Boolean running) {
+        isRunning = running;
     }
 }
