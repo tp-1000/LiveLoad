@@ -1,4 +1,8 @@
+## Currently underdevelopment. Come back soon or step through commits for working version.
+Status -- Should have made another branch, proof of concept done, now
+reworking project.
 #### A simple server that provides basic live-reloading 
+
  
 1) From commandline run and pass directory to watch  
        `$java -jar LiveLoad-1.0.0.jar  aProject/dir/`
