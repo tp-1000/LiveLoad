@@ -1,7 +1,5 @@
 package LiveLoad;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -17,28 +15,28 @@ public class Response {
 
 
 
-    public Response(String contentType, String path) {
-        this.path = path;
-
-
+    public Response(String contentType) {
         this.contentType = contentType;
 
+//        //set up body and header
+//        if(contentType.toLowerCase().contains("html") || contentType.contains("css") || contentType.contains("js")) {
+//            //file ( byles[].utf-8 + header + bytes[]
+//            if(path.toLowerCase().contains("livewrapper.js")){
+//                this.path = "/Users/thomaspetty/.liveload/livewrapper.js";
+//            }
+//            this.body = textBodyData().getBytes(StandardCharsets.UTF_8);
+//        } else {
+////             assume image but could be movie or other ( could return a few options as types - only image for now)
+//            // || bytes[] + header + bytes[])
+//            this.body = imageBodyData();
+//        }
+//
+//        this.header = makeHeader();
 
-        //set up body and header
-        if(contentType.toLowerCase().contains("html") || contentType.contains("css") || contentType.contains("js")) {
-            //file ( byles[].utf-8 + header + bytes[]
-            if(path.toLowerCase().contains("livewrapper.js")){
-                this.path = "/Users/thomaspetty/.liveload/livewrapper.js";
-            }
-            this.body = textBodyData().getBytes(StandardCharsets.UTF_8);
-        } else {
-//             assume image but could be movie or other ( could return a few options as types - only image for now)
-            // || bytes[] + header + bytes[])
-            this.body = imageBodyData();
-        }
+    }
 
-        this.header = makeHeader();
-
+    public Response(int x){
+        //makes new status request object
     }
 
     private byte[] makeHeader() {
@@ -104,16 +102,34 @@ public class Response {
     }
 
     public byte[] getResponse(){
-        try(ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream()) {
-            byteOutputStream.write(this.header);
-            byteOutputStream.write(this.body);
-            return byteOutputStream.toByteArray();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return ("HTTP/1.1 400 Bad Request\r\n").getBytes(StandardCharsets.UTF_8);
+        return fileNotFound();
+        //        try(ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream()) {
+//            byteOutputStream.write(this.header);
+//            byteOutputStream.write(this.body);
+//            return byteOutputStream.toByteArray();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        return ("HTTP/1.1 400 Bad Request\r\n").getBytes(StandardCharsets.UTF_8);
     }
 
+    public byte[] fileNotFound(){
+        return  ("HTTP/1.1 404 Not Found\r\n" +
+                "Content-Type: text/html\r\n" +
+                "Content-Length: 122\r\n" +
+                "Connection: keep-alive\r\n" +
+                "\r\n\r\n" +
+                "<html>" +
+                "<head><title>404 Not Found</title></head>" +
+                "<body bgcolor='white'>" +
+                "<center><h1>404 Not Found</h1></center>" +
+                "</body>" +
+                "</html>").getBytes(StandardCharsets.UTF_8);
+    }
+
+    public byte[] badRequest(){
+        return ("HTTP/1.1 400 Bad Request\r\n").getBytes(StandardCharsets.UTF_8);
+    }
 
 }

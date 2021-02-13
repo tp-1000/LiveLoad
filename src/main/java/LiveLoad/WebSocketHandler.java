@@ -29,14 +29,18 @@ public class WebSocketHandler implements Runnable {
         ) {
             System.out.println(" ** received a connection");
             data = scanner.useDelimiter("\\r\\n\\r\\n").next();
-            scanner.close();
             Matcher get = Pattern.compile("^GET").matcher(data);
 
             //If GET request proceed to process
             if(get.find()){
-                System.out.println("Get received");
+                //needs to correctly respond to:
+                //websocket + text/image
+                Response response = new Response(data);
+                out.write(response.getResponse());
+//
             } else {
-                System.out.println(404);
+                Response response = new Response(400);
+                out.write(response.badRequest());
             }
 
 /*
