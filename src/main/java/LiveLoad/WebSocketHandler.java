@@ -19,7 +19,7 @@ public class WebSocketHandler implements Runnable {
         this.socket = socket;
     }
 
-    @Override
+
     public void run() {
         //setup socket communication
         try (
