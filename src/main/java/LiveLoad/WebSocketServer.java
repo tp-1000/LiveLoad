@@ -34,8 +34,8 @@ public class WebSocketServer extends Thread {
         System.out.println(". . .running. . .");
         running.set(true);
 
-        while(running.get()) {
             System.out.println("listening for a connection on 8080");
+        while(running.get()) {
             //accept a connection and pass to handler
             try {
                 Socket socket = serverSocket.accept();
@@ -43,10 +43,20 @@ public class WebSocketServer extends Thread {
                 Thread webSocketHandler = new Thread(new WebSocketHandler(socket));
                 webSocketHandler.start();
                 System.out.println(WebSocketServer.activeCount());
+
+                ThreadGroup currentGroup = Thread.currentThread().getThreadGroup();
+                int noThreads = currentGroup.activeCount();
+                Thread[] lstThreads = new Thread[noThreads];
+                currentGroup.enumerate(lstThreads);
+
+                for (int i = 0; i < noThreads; i++) System.out.println("Thread No:" + i + " = " + lstThreads[i].getName());
+
             } catch (IOException e) {
                 //
                 e.printStackTrace();
             }
         }
     }
+
+
 }

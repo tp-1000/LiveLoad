@@ -3,21 +3,25 @@ package LiveLoad;
 import com.sun.nio.file.SensitivityWatchEventModifier;
 
 import java.io.IOException;
-import java.net.Socket;
 import java.nio.file.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 
 //Ugly implementation on mac - falls back to polling :(
-public class DirWatch extends Thread{
+//Create class to watch directory for changes
+//it also closes websocket
+
+public class DirWatch implements Runnable {
     private Path dir;
     private WatchService watchService;
     private WatchKey watchKey;
-    private Socket socket;
-    private Boolean isRunning = false;
+    private static AtomicBoolean isWatchingForSocket = new AtomicBoolean(false);
 
-    public DirWatch(Socket socket) throws IOException {
-        this.dir = Paths.get(App.getDirectory());
-        this.socket = socket;
+
+    public DirWatch(String path) throws IOException {
+        isWatchingForSocket.set(false);
+
+        this.dir = Paths.get(path);
 
         watchService = FileSystems.getDefault().newWatchService();
         watchKey = this.dir.register(watchService,
@@ -29,20 +33,22 @@ public class DirWatch extends Thread{
     }
 
 
-    @Override
     public void run() {
-        isRunning = true;
-        while(isRunning){
-            //may want to terminate if client disappears
+        isWatchingForSocket.set(true);
 
-            for (WatchEvent<?> event : watchKey.pollEvents()){
-                try {
-                    isRunning = false;
-                    watchService.close();
-                    watchKey.cancel();
-                    socket.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
+        while (isWatchingForSocket.get()) {
+            for (WatchEvent<?> event : watchKey.pollEvents()) {
+                if(event.count() > 0){
+                    System.out.println(event.context().toString());
+                    if(!event.context().toString().endsWith("swp")){
+                        try {
+                            isWatchingForSocket.set(false);
+                            watchService.close();
+                            watchKey.cancel();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
             }
         }
@@ -52,15 +58,5 @@ public class DirWatch extends Thread{
             e.printStackTrace();
         }
         watchKey.cancel();
-        try {
-            socket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    public void setRunning(Boolean running) {
-        isRunning = running;
     }
 }

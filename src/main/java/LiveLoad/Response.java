@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,8 +17,7 @@ public class Response {
     private byte[] body = new byte[0];
     private byte[] header;
     private String dataIn;
-    private String path;
-    
+
     //header
     //content type
     //text/javascript;charset=UTF-8
@@ -43,11 +43,52 @@ public class Response {
         //makes new  request object
     }
 
+//    public static void main(String[] args) {
+//        ServerSocket server = null;
+//        try {
+//            server = new ServerSocket(8081);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        try {
+//            System.out.println("Server has started on 127.0.0.1:80.\r\nWaiting for a connection...");
+//            Socket client = server.accept();
+//            System.out.println("A client connected.");
+//            InputStream in = client.getInputStream();
+//            OutputStream out = client.getOutputStream();
+//            Scanner s = new Scanner(in, "UTF-8");
+//            try {
+//                String data = s.useDelimiter("\\r\\n\\r\\n").next();
+//                Matcher get = Pattern.compile("^GET").matcher(data);
+//                if (get.find()) {
+//                    Matcher match = Pattern.compile("Sec-WebSocket-Key: (.*)").matcher(data);
+//                    match.find();
+//                    byte[] response = ("HTTP/1.1 101 Switching Protocols\r\n"
+//                            + "Connection: Upgrade\r\n"
+//                            + "Upgrade: websocket\r\n"
+//                            + "Sec-WebSocket-Accept: "
+//                            + Base64.getEncoder().encodeToString(MessageDigest.getInstance("SHA-1").digest((match.group(1) + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11").getBytes("UTF-8")))
+//                            + "\r\n\r\n").getBytes("UTF-8");
+//                    out.write(response, 0, response.length);
+//
+//                }
+//            } finally {
+//
+//            }
+//        } catch (NoSuchAlgorithmException e) {
+//            e.printStackTrace();
+//        } catch (UnsupportedEncodingException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
+
     public Response(String dataIn) {
         this.dataIn = dataIn;
         //currently only accept get request
-        if (getFrom.matcher(dataIn).find()) {
-            Matcher webSocketMatch = webSocketFrom.matcher(dataIn);
+        Matcher webSocketMatch = webSocketFrom.matcher(dataIn);
             if (webSocketMatch.find()) {
                 //webSocket response
                 buildWebSocketHeader(webSocketMatch);
@@ -60,7 +101,6 @@ public class Response {
                     header = badRequest();
                 }
             }
-        }
     }
 
     private void buildWebSocketHeader(Matcher webSocketMatch) {
@@ -70,15 +110,13 @@ public class Response {
                     + "Upgrade: websocket\r\n"
                     + "Sec-WebSocket-Accept: "
                     + Base64.getEncoder().encodeToString(MessageDigest.getInstance("SHA-1").digest((webSocketMatch.group(1) + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11").getBytes(StandardCharsets.UTF_8)))
-                    + "\r\n\r\n").getBytes("UTF-8");
+                    + "\r\n\r\n").getBytes(StandardCharsets.UTF_8);
             this.header = response;
         } catch (NoSuchAlgorithmException e){
             e.printStackTrace();
-        } catch (UnsupportedEncodingException e){
-            e.printStackTrace();
+            header = badRequest();
         }
-        
-        header = badRequest();
+
     }
 
     
@@ -160,7 +198,6 @@ public class Response {
 
 
     public byte[] getResponse(){
-        
         try(ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream()) {
             byteOutputStream.write(this.header);
             byteOutputStream.write(this.body);
@@ -168,6 +205,7 @@ public class Response {
         } catch (IOException e) {
             e.printStackTrace();
             return ("HTTP/1.1 400 Bad Request\r\n").getBytes(StandardCharsets.UTF_8);
+
         }
     }
 
@@ -175,63 +213,63 @@ public class Response {
         return ("HTTP/1.1 400 Bad Request\r\n").getBytes(StandardCharsets.UTF_8);
     }
 
-    public byte[] fileNotFound(){
-        return  ("HTTP/1.1 404 Not Found\r\n" +
-                "Content-Type: text/html\r\n" +
-                "Content-Length: 122\r\n" +
-                "Connection: keep-alive\r\n" +
-                "\r\n\r\n" +
-                "<html>" +
-                "<head><title>404 Not Found</title></head>" +
-                "<body bgcolor='white'>" +
-                "<center><h1>404 Not Found</h1></center>" +
-                "</body>" +
-                "</html>").getBytes(StandardCharsets.UTF_8);
-    }
+//    public byte[] fileNotFound(){
+//        return  ("HTTP/1.1 404 Not Found\r\n" +
+//                "Content-Type: text/html\r\n" +
+//                "Content-Length: 122\r\n" +
+//                "Connection: keep-alive\r\n" +
+//                "\r\n\r\n" +
+//                "<html>" +
+//                "<head><title>404 Not Found</title></head>" +
+//                "<body bgcolor='white'>" +
+//                "<center><h1>404 Not Found</h1></center>" +
+//                "</body>" +
+//                "</html>").getBytes(StandardCharsets.UTF_8);
+//    }
+//
+//    private byte[] makeHeader() {
+//        String contentLine = "Content-Type: image/" + dataIn + "\n";
+//
+//        if(dataIn.toLowerCase().contains("html") || dataIn.contains("js") || dataIn.contains("css")){
+//            contentLine = contentLine.replace("\n", "; charset=UTF-8\n");
+//            contentLine = contentLine.replace("image", "text");
+//        }
+//
+//        return ("HTTP/1.1 200 Success!\n" +
+//                "dev_env: left blank\n" +
+//                contentLine +
+//                "Content-Length: " + this.body.length + "\n\n").getBytes(StandardCharsets.UTF_8);
+//    }
 
-    private byte[] makeHeader() {
-        String contentLine = "Content-Type: image/" + dataIn + "\n";
+//    private String textBodyData() {
+//        //get file from path and turn it into a string
+//        //if html then adds livewrapper
+//
+//        StringBuilder dataStringBuilder = new StringBuilder();
+//        try (
+//                InputStream inputStream = new FileInputStream(new File(path));
+//                BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))
+//        ) {
+//            String line;
+//            while ((line = br.readLine()) != null) {
+//                dataStringBuilder.append(line).append("\n");
+//                if(line.toLowerCase().contains("<!doctype html>")){
+//                    dataStringBuilder.append("<script src=\"liveWrapper.js\"></script>").append("\n");
+//                }
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        return dataStringBuilder.toString();
+//    }
 
-        if(dataIn.toLowerCase().contains("html") || dataIn.contains("js") || dataIn.contains("css")){
-            contentLine = contentLine.replace("\n", "; charset=UTF-8\n");
-            contentLine = contentLine.replace("image", "text");
-        }
-
-        return ("HTTP/1.1 200 Success!\n" +
-                "dev_env: left blank\n" +
-                contentLine +
-                "Content-Length: " + this.body.length + "\n\n").getBytes(StandardCharsets.UTF_8);
-    }
-
-    private String textBodyData() {
-        //get file from path and turn it into a string
-        //if html then adds livewrapper
-
-        StringBuilder dataStringBuilder = new StringBuilder();
-        try (
-                InputStream inputStream = new FileInputStream(new File(path));
-                BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))
-        ) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                dataStringBuilder.append(line).append("\n");
-                if(line.toLowerCase().contains("<!doctype html>")){
-                    dataStringBuilder.append("<script src=\"liveWrapper.js\"></script>").append("\n");
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return dataStringBuilder.toString();
-    }
-
-    private byte[] imageBodyData() {
-
-        try {
-            return Files.readAllBytes(Paths.get(path));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//    private byte[] imageBodyData() {
+//
+//        try {
+//            return Files.readAllBytes(Paths.get(path));
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
 //        try(
 //                ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -245,9 +283,9 @@ public class Response {
 //            } catch (IOException e) {
 //                 e.printStackTrace();
 //        }
-                 body = "Content read Error".getBytes(StandardCharsets.UTF_8);
-                 return body;
-    }
+//                 body = "Content read Error".getBytes(StandardCharsets.UTF_8);
+//                 return body;
+//    }
     
     
 }
