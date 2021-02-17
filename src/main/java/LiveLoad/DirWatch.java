@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 //Ugly implementation on mac - falls back to polling :(
 //Create class to watch directory for changes
-//it also closes websocket
+//used to block websocket thread to keep open
 
 public class DirWatch implements Runnable {
     private Path dir;

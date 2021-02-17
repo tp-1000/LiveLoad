@@ -2,10 +2,6 @@ package LiveLoad;
 
 import java.io.*;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
