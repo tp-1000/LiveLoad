@@ -42,7 +42,6 @@ public class WebSocketServer extends Thread {
 
                 Thread webSocketHandler = new Thread(new WebSocketHandler(socket));
                 webSocketHandler.start();
-                System.out.println(WebSocketServer.activeCount());
 
             } catch (IOException e) {
                 //
