@@ -1,10 +1,7 @@
-## Currently underdevelopment. Come back soon or step through commits for working version.
-Status -- Should have made another branch, proof of concept done, now
-reworking project.
-#### A simple server that provides basic live-reloading 
+### A simple server that provides basic live-reloading 
 
  
-1) From commandline run and pass directory to watch  
+1) From commandline run jar and pass directory to watch  
        `$java -jar LiveLoad-1.0.0.jar  aProject/dir/`
         
 2) Request project html file from the server  
@@ -17,6 +14,11 @@ reworking project.
    The change triggers websocket to close calling browser to reload
 
 
+
 ***
-###### Note -  Will not move up a directory for requests 
-###### Will not handle requests to outside the project
+Notes:  
+- Will not move up a directory for requests  
+- Will not handle requests to outside the project
+- Will only handle GET requests
+- Currently, configured to ignore events from .swp files 
+- I would set jar file up to run with a bash alias/function
